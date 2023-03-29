@@ -1,26 +1,24 @@
 import React from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { getUsers } from '../../src/api/users'
-
-import './code.css'
+import { getUsers } from '../../api/users'
+import { usePageContext } from '../../../renderer/usePageContext'
 
 export { Page, prefetchQueries }
 
 const prefetchQueries = {
-  'usersAbout': {
+  'users': {
     fn: getUsers,
   }
 }
 
-function Page() {
-  const { data } = useQuery(['usersAbout'], getUsers);
+function Page({ users }) {
+  const context = usePageContext();
+  const { data } = useQuery(['users'], getUsers);
 
   return (
     <>
-      <h1>About</h1>
-      <p>
-        Demo using <code>vite-plugin-ssr</code>.
-      </p>
+      <h1>Welcome</h1>
+      This page is:
       <ul>
         {data.map((user) => 
           <li key={user.id}>{user.name}</li>

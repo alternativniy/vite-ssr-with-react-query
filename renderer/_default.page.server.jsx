@@ -37,8 +37,6 @@ async function render(pageContext) {
   const dehydratedState = dehydrate(queryClient)
   pageContext.dehydratedState = dehydratedState;
 
-  console.log('server work')
-
   const pageHtml = ReactDOMServer.renderToString(
     <QueryClientProvider client={queryClient}>
       <Hydrate state={dehydratedState}>
