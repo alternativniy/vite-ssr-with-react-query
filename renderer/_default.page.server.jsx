@@ -3,17 +3,50 @@ import React from 'react'
 import { PageShell } from './PageShell'
 import { escapeInject, dangerouslySkipEscape } from 'vite-plugin-ssr'
 import logoUrl from './logo.svg'
+import {
+  dehydrate,
+  Hydrate,
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query'
 
 export { render }
 // See https://vite-plugin-ssr.com/data-fetching
-export const passToClient = ['pageProps', 'urlPathname']
+export const passToClient = ['pageProps', 'documentProps', 'urlPathname', 'someAsyncProps', 'dehydratedState'];
 
 async function render(pageContext) {
-  const { Page, pageProps } = pageContext
+  const { Page, pageProps, exports: { prefetchQueries } } = pageContext
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        cacheTime: 1000 * 60 * 10,
+        staleTime: Infinity,
+        retryDelay: 2000,
+      },
+    },
+  });
+
+  if(prefetchQueries?.constructor == Object) {
+    const queries = [];
+    Object.entries(prefetchQueries).forEach(([key, query]) => {
+      queries.push(queryClient.prefetchQuery([key], query.fn));
+    });
+
+    await Promise.all(queries);
+  }
+  const dehydratedState = dehydrate(queryClient)
+  pageContext.dehydratedState = dehydratedState;
+
+  console.log('server work')
+
   const pageHtml = ReactDOMServer.renderToString(
-    <PageShell pageContext={pageContext}>
-      <Page {...pageProps} />
-    </PageShell>
+    <QueryClientProvider client={queryClient}>
+      <Hydrate state={dehydratedState}>
+        <PageShell pageContext={pageContext}>
+          <Page {...pageProps} />
+        </PageShell>
+      </Hydrate>
+    </QueryClientProvider>
   )
 
   // See https://vite-plugin-ssr.com/head
