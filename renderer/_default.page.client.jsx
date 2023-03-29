@@ -3,6 +3,7 @@ export const hydrationCanBeAborted = true;
 
 import React from 'react'
 import { hydrateRoot, createRoot } from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
 import { PageShell } from './PageShell'
 import {
   dehydrate,
@@ -35,9 +36,11 @@ async function render(pageContext) {
   const page = (
     <QueryClientProvider client={queryClient}>
       <Hydrate state={dehydratedState}>
-        <PageShell pageContext={pageContext}>
-          <Page {...pageProps} />
-        </PageShell>
+        <BrowserRouter>
+          <PageShell pageContext={pageContext}>
+            <Page {...pageProps} />
+          </PageShell>
+        </BrowserRouter>
       </Hydrate>
     </QueryClientProvider>
   )

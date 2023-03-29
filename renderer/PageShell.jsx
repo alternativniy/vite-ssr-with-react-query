@@ -2,7 +2,7 @@ import React from 'react'
 import logo from './logo.svg'
 import './PageShell.css'
 import { PageContextProvider } from './usePageContext'
-import { Link } from './Link'
+import { NavLink } from 'react-router-dom'
 
 export { PageShell }
 
@@ -13,12 +13,12 @@ function PageShell({ pageContext, children }) {
         <Layout>
           <Sidebar>
             <Logo />
-            <Link className="navitem" href="/">
+            <NavLink className="navitem" to="/">
               Home
-            </Link>
-            <Link className="navitem" href="/about">
+            </NavLink>
+            <NavLink className="navitem" to="/about">
               About
-            </Link>
+            </NavLink>
           </Sidebar>
           <Content>{children}</Content>
         </Layout>

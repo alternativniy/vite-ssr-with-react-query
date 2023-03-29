@@ -1,5 +1,6 @@
 import ReactDOMServer from 'react-dom/server'
 import React from 'react'
+import { StaticRouter } from 'react-router-dom/server'
 import { PageShell } from './PageShell'
 import { escapeInject, dangerouslySkipEscape } from 'vite-plugin-ssr'
 import logoUrl from './logo.svg'
@@ -15,7 +16,7 @@ export { render }
 export const passToClient = ['pageProps', 'documentProps', 'urlPathname', 'someAsyncProps', 'dehydratedState'];
 
 async function render(pageContext) {
-  const { Page, pageProps, exports: { prefetchQueries } } = pageContext
+  const { Page, pageProps, exports: { prefetchQueries }, urlPathname } = pageContext
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -40,9 +41,11 @@ async function render(pageContext) {
   const pageHtml = ReactDOMServer.renderToString(
     <QueryClientProvider client={queryClient}>
       <Hydrate state={dehydratedState}>
-        <PageShell pageContext={pageContext}>
-          <Page {...pageProps} />
-        </PageShell>
+        <StaticRouter location={urlPathname}>
+          <PageShell pageContext={pageContext}>
+            <Page {...pageProps} />
+          </PageShell>
+        </StaticRouter>
       </Hydrate>
     </QueryClientProvider>
   )
