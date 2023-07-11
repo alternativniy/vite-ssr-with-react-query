@@ -1,7 +1,8 @@
 import React from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getUsers } from '../../api/users'
-import { usePageContext } from '../../../renderer/usePageContext'
+
+import { User } from '../../types/api/User'
 
 export { Page, prefetchQueries }
 
@@ -11,16 +12,15 @@ const prefetchQueries = {
   }
 }
 
-function Page({ users }) {
-  const context = usePageContext();
-  const { data } = useQuery(['users'], getUsers);
+function Page() {
+  const { data } = useQuery<User[]>(['users'], getUsers);
 
   return (
     <>
       <h1>Welcome</h1>
       This page is:
       <ul>
-        {data.map((user) => 
+        {data?.map((user) => 
           <li key={user.id}>{user.name}</li>
         )}
       </ul>

@@ -1,12 +1,20 @@
-import React from 'react'
-import logo from './logo.svg'
-import './PageShell.css'
-import { PageContextProvider } from './usePageContext'
-import { NavLink } from 'react-router-dom'
+import React, { ReactNode } from "react";
+import logo from "./logo.svg";
+import "./PageShell.css";
+import { PageContextProvider } from "./usePageContext";
+import { NavLink } from "react-router-dom";
 
-export { PageShell }
+import { PageContext } from "./types";
 
-function PageShell({ pageContext, children }) {
+export { PageShell };
+
+function PageShell({
+  pageContext,
+  children,
+}: {
+  pageContext: PageContext;
+  children: ReactNode;
+}) {
   return (
     <React.StrictMode>
       <PageContextProvider pageContext={pageContext}>
@@ -24,66 +32,66 @@ function PageShell({ pageContext, children }) {
         </Layout>
       </PageContextProvider>
     </React.StrictMode>
-  )
+  );
 }
 
-function Layout({ children }) {
+function Layout({ children }: { children: ReactNode }) {
   return (
     <div
       style={{
-        display: 'flex',
+        display: "flex",
         maxWidth: 900,
-        margin: 'auto'
+        margin: "auto",
       }}
     >
       {children}
     </div>
-  )
+  );
 }
 
-function Sidebar({ children }) {
+function Sidebar({ children }: { children: ReactNode }) {
   return (
     <div
       style={{
         padding: 20,
         flexShrink: 0,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        lineHeight: '1.8em'
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        lineHeight: "1.8em",
       }}
     >
       {children}
     </div>
-  )
+  );
 }
 
-function Content({ children }) {
+function Content({ children }: { children: ReactNode }) {
   return (
     <div
       style={{
         padding: 20,
         paddingBottom: 50,
-        borderLeft: '2px solid #eee',
-        minHeight: '100vh'
+        borderLeft: "2px solid #eee",
+        minHeight: "100vh",
       }}
     >
       {children}
     </div>
-  )
+  );
 }
 
-function Logo() {
+const Logo = () => {
   return (
     <div
       style={{
         marginTop: 20,
-        marginBottom: 10
+        marginBottom: 10,
       }}
     >
       <a href="/">
         <img src={logo} height={64} width={64} alt="logo" />
       </a>
     </div>
-  )
-}
+  );
+};

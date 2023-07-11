@@ -2,6 +2,8 @@ import React from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getUsers } from '../../api/users'
 
+import { User } from '../../types/api/User'
+
 import './code.css'
 
 export { Page, prefetchQueries }
@@ -13,7 +15,7 @@ const prefetchQueries = {
 }
 
 function Page() {
-  const { data } = useQuery(['usersAbout'], getUsers);
+  const { data } = useQuery<User[]>(['usersAbout'], getUsers);
 
   return (
     <>
@@ -22,7 +24,7 @@ function Page() {
         Demo using <code>vite-plugin-ssr</code>.
       </p>
       <ul>
-        {data.map((user) => 
+        {data?.map((user) => 
           <li key={user.id}>{user.name}</li>
         )}
       </ul>

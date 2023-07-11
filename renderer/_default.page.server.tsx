@@ -1,22 +1,37 @@
-import ReactDOMServer from 'react-dom/server'
-import React from 'react'
-import { StaticRouter } from 'react-router-dom/server'
-import { PageShell } from './PageShell'
-import { escapeInject, dangerouslySkipEscape } from 'vite-plugin-ssr/server'
-import logoUrl from './logo.svg'
+import ReactDOMServer from "react-dom/server";
+import React from "react";
+import { StaticRouter } from "react-router-dom/server";
+import { PageShell } from "./PageShell";
+import { escapeInject, dangerouslySkipEscape } from "vite-plugin-ssr/server";
+import logoUrl from "./logo.svg";
 import {
   dehydrate,
   Hydrate,
   QueryClient,
   QueryClientProvider,
-} from '@tanstack/react-query'
+} from "@tanstack/react-query";
 
-export { render }
+import { PageContext } from "./types";
+
+export { render };
+
 // See https://vite-plugin-ssr.com/data-fetching
-export const passToClient = ['pageProps', 'documentProps', 'urlPathname', 'someAsyncProps', 'dehydratedState'];
+export const passToClient = [
+  "pageProps",
+  "documentProps",
+  "urlPathname",
+  "someAsyncProps",
+  "dehydratedState",
+];
 
-async function render(pageContext) {
-  const { Page, pageProps, exports: { prefetchQueries }, urlPathname } = pageContext
+async function render(pageContext: PageContext) {
+  const {
+    Page,
+    pageProps,
+    exports: { prefetchQueries },
+    urlPathname,
+  } = pageContext;
+
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -27,15 +42,17 @@ async function render(pageContext) {
     },
   });
 
-  if(prefetchQueries?.constructor == Object) {
-    const queries = [];
+  if (prefetchQueries?.constructor == Object) {
+    const queries: Promise<void>[] = [];
+
     Object.entries(prefetchQueries).forEach(([key, query]) => {
       queries.push(queryClient.prefetchQuery([key], query.fn));
     });
 
     await Promise.all(queries);
   }
-  const dehydratedState = dehydrate(queryClient)
+
+  const dehydratedState = dehydrate(queryClient);
   pageContext.dehydratedState = dehydratedState;
 
   const pageHtml = ReactDOMServer.renderToString(
@@ -48,12 +65,14 @@ async function render(pageContext) {
         </StaticRouter>
       </Hydrate>
     </QueryClientProvider>
-  )
+  );
 
   // See https://vite-plugin-ssr.com/head
-  const { documentProps } = pageContext.exports
-  const title = (documentProps && documentProps.title) || 'Vite SSR app'
-  const desc = (documentProps && documentProps.description) || 'App using Vite + vite-plugin-ssr'
+  const { documentProps } = pageContext.exports;
+  const title = (documentProps && documentProps.title) || "Vite SSR app";
+  const desc =
+    (documentProps && documentProps.description) ||
+    "App using Vite + vite-plugin-ssr";
 
   const documentHtml = escapeInject`<!DOCTYPE html>
     <html lang="en">
@@ -67,12 +86,12 @@ async function render(pageContext) {
       <body>
         <div id="page-view">${dangerouslySkipEscape(pageHtml)}</div>
       </body>
-    </html>`
+    </html>`;
 
   return {
     documentHtml,
     pageContext: {
       // We can add some `pageContext` here, which is useful if we want to do page redirection https://vite-plugin-ssr.com/page-redirection
-    }
-  }
+    },
+  };
 }
