@@ -2,7 +2,7 @@ import ReactDOMServer from 'react-dom/server'
 import React from 'react'
 import { StaticRouter } from 'react-router-dom/server'
 import { PageShell } from './PageShell'
-import { escapeInject, dangerouslySkipEscape } from 'vite-plugin-ssr'
+import { escapeInject, dangerouslySkipEscape } from 'vite-plugin-ssr/server'
 import logoUrl from './logo.svg'
 import {
   dehydrate,
